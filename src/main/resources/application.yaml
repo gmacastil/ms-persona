@@ -1,6 +1,14 @@
 spring:
   application:
     name: ms-persona
+  datasource:
+    url: jdbc:mysql://localhost:3306/persona?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456789
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
 logging:
   structured:
     format:

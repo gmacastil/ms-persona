@@ -11,6 +11,10 @@ https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html
 
 # Ejecutar
 
+La aplicación se conecta a MySQL (`localhost:3306`, base `persona`, que se crea
+si no existe). Ajusta la conexión en `src/main/resources/application.yaml`.
+Hibernate actualiza automáticamente la tabla `personas`.
+
 java -jar build/libs/ms-persona-0.0.1-SNAPSHOT.jar
 
 # enviar a sonaqube

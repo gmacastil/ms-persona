@@ -7,7 +7,7 @@
 
 ### Variable para reutilizar el id creado en las siguientes peticiones.
 ### Después de ejecutar "Crear persona", copia el id de la respuesta aquí.
-@personaId = REEMPLAZAR_CON_ID
+@personaId = efaf4a70-8e5f-4c6a-a06f-669e5750900f
 
 ### 1. Crear una persona
 POST {{host}}/personas
