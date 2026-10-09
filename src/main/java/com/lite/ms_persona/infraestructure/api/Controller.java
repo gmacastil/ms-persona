@@ -2,6 +2,8 @@ package com.lite.ms_persona.infraestructure.api;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ import static net.logstash.logback.argument.StructuredArguments.value;
  * negocio, solo delega en el servicio de aplicación.
  */
 @RestController
-@RequestMapping("/personas")
+@RequestMapping("/v1/personas")
 public class Controller {
 
     private static final Logger log = LoggerFactory.getLogger(Controller.class);
@@ -49,7 +51,7 @@ public class Controller {
     }
 
     @PostMapping
-    public ResponseEntity<Persona> createPersona(@RequestBody Persona persona) {
+    public ResponseEntity<Persona> createPersona(@Valid @RequestBody Persona persona) {
         Persona personaCreada = personaService.createPersona(persona);
         return ResponseEntity.status(HttpStatus.CREATED).body(personaCreada);
     }
@@ -66,7 +68,7 @@ public class Controller {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Persona> updatePersona(@PathVariable String id, @RequestBody Persona persona) {
+    public ResponseEntity<Persona> updatePersona(@PathVariable String id, @Valid @RequestBody Persona persona) {
         return ResponseEntity.ok(personaService.updatePersona(id, persona));
     }
 

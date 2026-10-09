@@ -9,7 +9,10 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-logging:
-  structured:
-    format:
-      console: ecs
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+logstash:
+  host: localhost:9201

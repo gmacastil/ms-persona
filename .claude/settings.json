@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew compileJava compileTestJava --console=plain)",
+      "Bash(xargs -I{} sh -c 'echo \"== {} ==\"; grep -E \"testcase name|tests=|failures=|errors=\" {}')"
+    ]
+  }
+}
