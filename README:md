@@ -1,0 +1,17 @@
+# Compilar (generar el jar)
+
+./gradlew build
+
+# Cear la imagen docker
+
+docker build . -t ms-persona:1
+
+# Ejecutar la imagen docker
+
+docker run --name ms-persona -d -p 8080:8080 ms-persona:1
+
+
+# ejecutar la imagen docker con variables de entorno
+
+docker run --name ms-persona -d -p 8080:8080 -e DATABASE_HOST=mysql -e DATABASE_PORT=3306 -e DATABASE_NAME=persona -e DATABASE_USERNAME=root -e DATABASE_PASSWORD=123456789 -e LOGSTASH_HOST=logstash -e LOGSTASH_PORT=9201 ms-persona:2
+
