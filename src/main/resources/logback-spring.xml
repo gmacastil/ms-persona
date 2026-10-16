@@ -30,14 +30,26 @@
 
 
 		
-	<root level="INFO"> 
-		<appender-ref ref="JSON"/>
-		<appender-ref ref="LOGSTASH"/>
-	</root>
+	<springProfile name="test">
+		<root level="INFO">
+			<appender-ref ref="JSON"/>
+		</root>
 
-	<logger name="servicio" level="ERROR">
-		<appender-ref ref="JSON"/>
-		<appender-ref ref="LOGSTASH"/>
-	</logger>
+		<logger name="servicio" level="ERROR">
+			<appender-ref ref="JSON"/>
+		</logger>
+	</springProfile>
+
+	<springProfile name="!test">
+		<root level="INFO">
+			<appender-ref ref="JSON"/>
+			<appender-ref ref="LOGSTASH"/>
+		</root>
+
+		<logger name="servicio" level="ERROR">
+			<appender-ref ref="JSON"/>
+			<appender-ref ref="LOGSTASH"/>
+		</logger>
+	</springProfile>
 
 </configuration>
