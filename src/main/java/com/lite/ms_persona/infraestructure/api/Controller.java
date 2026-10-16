@@ -30,7 +30,7 @@ import static net.logstash.logback.argument.StructuredArguments.value;
  * negocio, solo delega en el servicio de aplicación.
  */
 @RestController
-@RequestMapping("/v1/personas")
+@RequestMapping("/v2/personas")
 public class Controller {
 
     private static final Logger log = LoggerFactory.getLogger(Controller.class);

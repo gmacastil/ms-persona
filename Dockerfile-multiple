@@ -1,0 +1,22 @@
+FROM gradle:jdk21-corretto as build
+
+COPY src /home/gradle/src
+COPY build.gradle /home/gradle/build.gradle
+COPY settings.gradle /home/gradle/settings.gradle
+COPY gradlew /home/gradle/gradlew
+
+RUN chmod +x /home/gradle/gradlew
+
+RUN ./gradlew build --no-daemon
+
+
+
+
+
+FROM eclipse-temurin:21-alpine-3.24
+
+WORKDIR /app
+
+COPY --from=build /home/gradle/build/libs/*.jar app.jar
+
+CMD ["java", "-jar", "app.jar"]
