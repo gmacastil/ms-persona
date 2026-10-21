@@ -17,7 +17,11 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.lite.ms_persona.application.PersonaService;
+import com.lite.ms_persona.application.bus.CommandBus;
+import com.lite.ms_persona.application.command.ActualizarPersonaCommand;
+import com.lite.ms_persona.application.command.CrearPersonaCommand;
+import com.lite.ms_persona.application.command.EliminarPersonaCommand;
+import com.lite.ms_persona.application.query.PersonaQueryService;
 import com.lite.ms_persona.domain.Persona;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,14 +40,18 @@ class MsPersonaApplicationTests {
 	static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.4");
 
 	@Autowired
-	private PersonaService personaService;
+	private CommandBus commandBus;
+
+	@Autowired
+	private PersonaQueryService personaQueryService;
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@BeforeEach
 	void clearDatabase() {
-		personaService.readAllPersonas().forEach(persona -> personaService.deletePersona(persona.id()));
+		personaQueryService.todas()
+				.forEach(persona -> commandBus.dispatch(new EliminarPersonaCommand(persona.id())));
 	}
 
 	@Test
@@ -79,18 +87,19 @@ class MsPersonaApplicationTests {
 	}
 
 	@Test
-	void persistsPersonaThroughCrudUseCases() {
-		Persona created = personaService.createPersona(
-				new Persona("Ada", "Lovelace", "ada@example.com", "555-0100"));
+	void persistsPersonaThroughCommandsAndQueries() {
+		Persona created = commandBus.dispatch(
+				new CrearPersonaCommand(new Persona("Ada", "Lovelace", "ada@example.com", "3001234567")));
 
-		assertEquals(created, personaService.readPersona(created.id()));
-		assertEquals(1, personaService.readAllPersonas().size());
+		assertEquals(created, personaQueryService.porId(created.id()));
+		assertEquals(1, personaQueryService.todas().size());
 
-		Persona updated = personaService.updatePersona(created.id(),
-				new Persona("Ada", "Byron", "ada@example.com", "555-0101"));
+		Persona updated = commandBus.dispatch(
+				new ActualizarPersonaCommand(created.id(),
+						new Persona("Ada", "Byron", "ada@example.com", "3001234568")));
 		assertEquals("Byron", updated.apellido());
 
-		personaService.deletePersona(created.id());
-		assertThrows(NoSuchElementException.class, () -> personaService.readPersona(created.id()));
+		commandBus.dispatch(new EliminarPersonaCommand(created.id()));
+		assertThrows(NoSuchElementException.class, () -> personaQueryService.porId(created.id()));
 	}
 }

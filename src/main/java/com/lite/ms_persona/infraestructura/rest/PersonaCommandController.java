@@ -1,13 +1,10 @@
 package com.lite.ms_persona.infraestructura.rest;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,47 +12,42 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lite.ms_persona.application.PersonaService;
+import com.lite.ms_persona.application.bus.CommandBus;
+import com.lite.ms_persona.application.command.ActualizarPersonaCommand;
+import com.lite.ms_persona.application.command.CrearPersonaCommand;
+import com.lite.ms_persona.application.command.EliminarPersonaCommand;
 import com.lite.ms_persona.domain.Persona;
 
 /**
- * Adaptador de entrada (driving adapter) que expone los casos de uso de
- * {@link PersonaService} mediante una API REST. No contiene lógica de
- * negocio, solo delega en el servicio de aplicación.
+ * Lado de escritura (command) de CQRS: traduce las peticiones REST en
+ * {@link com.lite.ms_persona.application.bus.Command}s y los despacha al
+ * {@link CommandBus}, separado del controller de solo lectura.
  */
 @RestController
 @RequestMapping("/v2/personas")
-public class PersonaController {
+public class PersonaCommandController {
 
-    private final PersonaService personaService;
+    private final CommandBus commandBus;
 
-    public PersonaController(PersonaService personaService) {
-        this.personaService = personaService;
+    public PersonaCommandController(CommandBus commandBus) {
+        this.commandBus = commandBus;
     }
 
     @PostMapping
     public ResponseEntity<Persona> createPersona(@Valid @RequestBody Persona persona) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(personaService.createPersona(persona));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Persona> readPersona(@PathVariable String id) {
-        return ResponseEntity.ok(personaService.readPersona(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Persona>> readAllPersonas() {
-        return ResponseEntity.ok(personaService.readAllPersonas());
+        Persona creada = commandBus.dispatch(new CrearPersonaCommand(persona));
+        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Persona> updatePersona(@PathVariable String id, @Valid @RequestBody Persona persona) {
-        return ResponseEntity.ok(personaService.updatePersona(id, persona));
+        Persona actualizada = commandBus.dispatch(new ActualizarPersonaCommand(id, persona));
+        return ResponseEntity.ok(actualizada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePersona(@PathVariable String id) {
-        personaService.deletePersona(id);
+        commandBus.dispatch(new EliminarPersonaCommand(id));
         return ResponseEntity.noContent().build();
     }
 }
