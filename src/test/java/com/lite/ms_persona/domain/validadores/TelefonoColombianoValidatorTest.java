@@ -1,4 +1,4 @@
-package com.lite.ms_persona.domain.validation;
+package com.lite.ms_persona.domain.validadores;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

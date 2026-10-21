@@ -17,7 +17,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.lite.ms_persona.application.port.PersonaService;
+import com.lite.ms_persona.application.PersonaService;
 import com.lite.ms_persona.domain.Persona;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

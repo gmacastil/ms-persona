@@ -1,9 +1,7 @@
-package com.lite.ms_persona.domain.port;
+package com.lite.ms_persona.domain;
 
 import java.util.List;
 import java.util.Optional;
-
-import com.lite.ms_persona.domain.Persona;
 
 /**
  * Puerto de salida (output port) definido en el dominio.

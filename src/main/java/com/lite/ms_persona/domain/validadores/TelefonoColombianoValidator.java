@@ -1,4 +1,4 @@
-package com.lite.ms_persona.domain.validation;
+package com.lite.ms_persona.domain.validadores;
 
 import java.util.regex.Pattern;
 

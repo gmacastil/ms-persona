@@ -3,7 +3,7 @@ package com.lite.ms_persona.domain;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-import com.lite.ms_persona.domain.validation.TelefonoColombiano;
+import com.lite.ms_persona.domain.validadores.TelefonoColombiano;
 
 public record Persona (
     @NotBlank

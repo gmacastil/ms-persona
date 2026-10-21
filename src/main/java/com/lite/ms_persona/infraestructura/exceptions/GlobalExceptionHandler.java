@@ -1,10 +1,13 @@
-package com.lite.ms_persona.infraestructure.api;
+package com.lite.ms_persona.infraestructura.exceptions;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNotFound(NoSuchElementException ex, HttpServletRequest request) {
@@ -27,6 +34,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+        return handle(ex, request, HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex,
+            HttpServletRequest request) {
+        String message = ex.getConstraintViolations().stream()
+                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                 .collect(Collectors.joining("; "));
         return handle(ex, request, HttpStatus.BAD_REQUEST, message);
     }
@@ -56,7 +72,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request,
             HttpStatusCode status,
             String message) {
-        Controller.logError(request.getMethod(), request.getRequestURI(), status, ex);
+        log.error("API request failed",
+                value("method", request.getMethod()),
+                value("path", request.getRequestURI()),
+                value("status", status.value()),
+                value("error", ex.getMessage()),
+                ex);
         return ResponseEntity.status(status).body(message);
     }
 }

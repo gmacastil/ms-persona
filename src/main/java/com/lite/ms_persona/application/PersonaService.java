@@ -1,4 +1,4 @@
-package com.lite.ms_persona.application.port;
+package com.lite.ms_persona.application;
 
 import java.util.List;
 
