@@ -19,6 +19,22 @@ services:
     networks:
       - clase
 
+  valkey:
+    image: valkey/valkey:8.1-alpine
+    container_name: valkey
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - valkey-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - clase
+
   ms-persona:
     image: ms-persona:2
     container_name: ms-persona
@@ -31,36 +47,23 @@ services:
       - DATABASE_NAME=persona
       - DATABASE_USERNAME=root
       - DATABASE_PASSWORD=123456789
+      - VALKEY_HOST=valkey
+      - VALKEY_PORT=6379
       - LOGSTASH_HOST=logstash
       - LOGSTASH_PORT=9201
+    volumes:
+      - ./folder:/uploads
     depends_on:
       mysql:
         condition: service_healthy
-    networks:
-      - clase
-
-  ms-persona2:
-    image: ms-persona:4
-    container_name: ms-persona2
-    restart: on-failure
-    ports:
-      - 8081:8080
-    environment:
-      - DATABASE_HOST=mysql
-      - DATABASE_PORT=3306
-      - DATABASE_NAME=persona
-      - DATABASE_USERNAME=root
-      - DATABASE_PASSWORD=123456789
-      - LOGSTASH_HOST=logstash
-      - LOGSTASH_PORT=9201
-    depends_on:
-      mysql:
+      valkey:
         condition: service_healthy
     networks:
       - clase
 
 volumes:
   mysql-data:
+  valkey-data:
 
 networks:
   clase:

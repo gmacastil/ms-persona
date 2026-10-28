@@ -2,5 +2,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
 logstash:
   host: localhost:9201
